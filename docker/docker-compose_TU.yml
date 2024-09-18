@@ -1,4 +1,4 @@
-version: "2"
+version: "2.1"
 
 services:
   <CONTAINER_NAME>:
@@ -19,7 +19,7 @@ services:
       - "traefik.docker.network=traefik"
       - "traefik.http.services.<PROJECT_NAME>.loadbalancer.server.port=8080"
       - "traefik.http.routers.<PROJECT_NAME>.rule=PathPrefix(`/<CONTAINER_NAME>/api`)"
-      - "traefik.http.routers.<PROJECT_NAME>.entrypoints=http"
+      - "traefik.http.routers.<PROJECT_NAME>.entrypoints=https"
       - "traefik.http.routers.<PROJECT_NAME>.tls=true"
       - "traefik.http.routers.<PROJECT_NAME>.tls.certresolver=certResolver@file"
     environment:
@@ -33,5 +33,4 @@ services:
 
 networks:
   traefik:
-    external:
-      name: traefik
+    external: true

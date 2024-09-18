@@ -49,28 +49,28 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 
 	fileName := req.URL.Query().Get("fileName")
 	if fileName == "" {
-		fmt.Fprint(w, "parameter 'fileName' not found.")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "parameter 'fileName' not found.")
 		return
 	}
 
 	responseVertexAI, err := generateContentFromPDF(fileName)
 	if err != nil {
-		fmt.Fprintf(w, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%v", err)
 		return
 	}
 
 	testValidationResp := convertResponse(*responseVertexAI)
 	answer, err := json.Marshal(testValidationResp)
 	if err != nil {
-		fmt.Fprintf(w, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%v", err)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", answer)
 	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "%s", string(answer))
 }
 
 func convertResponse(responseVertexAI ResponseVertexAI) TestValidationResponse {
