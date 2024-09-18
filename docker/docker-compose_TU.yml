@@ -8,27 +8,22 @@ services:
       [
         "./qc-result-validator"
       ]
-    networks:
-      - traefik
+    networks: [ "traefik" ]
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/TZ:ro
+    mem_limit: "100m"
+    memswap_limit: "150m"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.services.<PROJECT_NAME>.loadbalancer.server.port=8000"
+
       - "traefik.http.routers.<PROJECT_NAME>.rule=PathPrefix(`/<CONTAINER_NAME>`)"
       - "traefik.http.routers.<PROJECT_NAME>.entrypoints=https"
       - "traefik.http.routers.<PROJECT_NAME>.tls=true"
-      - "traefik.http.routers.<PROJECT_NAME>.tls.certresolver=certResolver@file"
-      - "traefik.http.routers.<PROJECT_NAME>.middlewares=<PROJECT_NAME>-auth@docker, <PROJECT_NAME>-strip@docker"
-      - "traefik.http.middlewares.<PROJECT_NAME>-auth.basicauth.users=prometheus:$$2a$$10$$NEZJn9CSmnBfEVDnuIorGuCxpTVVNH71Wsut/AkCWCBclsaPcmqcm"
+      
       - "traefik.http.middlewares.<PROJECT_NAME>-strip.stripprefix.prefixes=/<CONTAINER_NAME>"
-      - "traefik.http.routers.<PROJECT_NAME>-docs.rule=PathPrefix(`/<CONTAINER_NAME>/docs`)"
-      - "traefik.http.routers.<PROJECT_NAME>-docs.entrypoints=https"
-      - "traefik.http.routers.<PROJECT_NAME>-docs.tls=true"
-      - "traefik.http.routers.<PROJECT_NAME>-docs.tls.certresolver=certResolver@file"
-      - "traefik.http.routers.<PROJECT_NAME>-docs.middlewares=<PROJECT_NAME>-strip@docker"
       # override default prometheus metrics path
       - "prometheus.metrics-path=/metrics"
     environment:
@@ -44,6 +39,3 @@ networks:
   traefik:
     external:
       name: traefik
-  simplesoap:
-    external:
-      name: simplesoap

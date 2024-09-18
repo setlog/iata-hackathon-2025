@@ -24,7 +24,7 @@ RUN update-ca-certificates
 # Stage 2. Run the previous-built binary
 FROM busybox:1.35
 
-ENV PORT 8800
+ENV PORT 8000
 ENV fluenthost fluentbit
 
 RUN mkdir /app
