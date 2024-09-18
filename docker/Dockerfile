@@ -35,6 +35,7 @@ COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copying application and config from previous stage
 COPY --from=builder /go/src/myapp/qc-result-validator qc-result-validator
+COPY google-account-key.json /google-account-key.json
 
 RUN addgroup -g 2001 osca && adduser -D -H -u 2001 -G osca osca
 

@@ -20,9 +20,11 @@ build_and_push_image:
     - echo "${GCR_SERVICE_ACCOUNT}" | docker login -u _json_key --password-stdin https://${GLOBAL_CONTAINER_REGISTRY}
     - TAG_NAME=$(echo -n "${CI_COMMIT_REF_NAME}" | tr / _) # replace illegal chars for tags
     - IMAGE_NAME=${GLOBAL_CONTAINER_REGISTRY}/${GCR_PROJECT_NAME}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}:${TAG_NAME}
+    - echo ${GOOGLE_VERTEX_AI_KEY} > google-account-key.json
     - docker build --pull --build-arg TOKEN=${CI_JOB_TOKEN} --file docker/Dockerfile -t ${IMAGE_NAME} .
     - echo "Pushing image ${IMAGE_NAME}"
     - docker push ${IMAGE_NAME}
+    - rm google-account-key.json
   rules:
     - if: "$CI_COMMIT_TAG"
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
@@ -36,6 +38,7 @@ build_and_push_image:
   script:
     - sed -i "s/<CUSTOMER>/${CUSTOMER}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
     - sed -i "s/<ENVIRONMENT>/${CI_ENVIRONMENT_NAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
+    - sed -i "s/<BUCKET_NAME>/${BUCKET_NAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
     - deploy_and_start_service
 
 deploy-TU:
@@ -45,6 +48,7 @@ deploy-TU:
   variables:
     IMAGE_TAG: "main"
     CUSTOMER: "Rossmann QC"
+    BUCKET_NAME: "gs://test-files-rossmann-qc/delivery"
   only: [ "main" ]
 
 deploy-UAT:
@@ -54,4 +58,5 @@ deploy-UAT:
   variables:
     IMAGE_TAG: "$CI_COMMIT_TAG"
     CUSTOMER: "Rossmann QC"
+    BUCKET_NAME: "gs://uat-files-rossmann-qc/delivery"
   only: [ "uat" ]
