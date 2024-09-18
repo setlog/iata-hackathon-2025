@@ -12,7 +12,7 @@ WORKDIR /go/src/myapp
 COPY go.mod .
 RUN go mod tidy
 COPY . .
-RUN go build -a --installsuffix cgo --ldflags="-s" -o bin/main
+RUN go build -a --installsuffix cgo --ldflags="-s" -o qc-result-validator
 
 # Stage 1. Manage certs
 FROM alpine:3 as certs
@@ -34,7 +34,7 @@ WORKDIR /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copying application and config from previous stage
-COPY --from=builder /go/src/myapp/bin/main main
+COPY --from=builder /go/src/myapp/qc-result-validator qc-result-validator
 
 RUN addgroup -g 2001 osca && adduser -D -H -u 2001 -G osca osca
 
@@ -42,4 +42,4 @@ EXPOSE $PORT
 
 USER osca
 
-ENTRYPOINT ["./main"]
+ENTRYPOINT ["./qc-result-validator"]
