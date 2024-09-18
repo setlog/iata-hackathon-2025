@@ -43,7 +43,7 @@ deploy-TU:
   environment:
     name: "TU"
   variables:
-    IMAGE_TAG: "master"
+    IMAGE_TAG: "main"
     CUSTOMER: "Rossmann QC"
   only: [ "main" ]
 
