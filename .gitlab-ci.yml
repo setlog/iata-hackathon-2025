@@ -44,6 +44,7 @@ deploy-TU:
     name: "TU"
   variables:
     IMAGE_TAG: "master"
+    CUSTOMER: "Rossmann QC"
   only: [ "main" ]
 
 deploy-UAT:
@@ -52,5 +53,6 @@ deploy-UAT:
     name: "UAT"
   variables:
     IMAGE_TAG: "$CI_COMMIT_TAG"
+    CUSTOMER: "Rossmann QC"
   when: manual
   only: [ "uat" ]
