@@ -37,7 +37,7 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: "/google-account-key.json"
       GCLOUD_PROJECT_ID: "setlog-rossmann-qc"
       GCLOUD_LOCATION: "europe-west3"
-      GCLOUD_BUCKETNAME: "gs://<BUCKETNAME>"
+      GCLOUD_BUCKETNAME: "gs://<BUCKETNAME>/delivery"
     restart: always
 
 networks:
