@@ -44,7 +44,7 @@ deploy-TU:
     name: "TU"
   variables:
     IMAGE_TAG: "master"
-  only: [ "master" ]
+  only: [ "main" ]
 
 deploy-UAT:
   extends: .deploy
