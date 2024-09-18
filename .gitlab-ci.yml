@@ -54,5 +54,4 @@ deploy-UAT:
   variables:
     IMAGE_TAG: "$CI_COMMIT_TAG"
     CUSTOMER: "Rossmann QC"
-  when: manual
   only: [ "uat" ]

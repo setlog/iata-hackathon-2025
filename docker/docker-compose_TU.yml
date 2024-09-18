@@ -6,7 +6,7 @@ services:
     container_name: <CONTAINER_NAME>
     entrypoint:
       [
-        "./main"
+        "./qc-result-validator"
       ]
     networks:
       - traefik
