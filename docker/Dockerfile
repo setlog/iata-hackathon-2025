@@ -1,5 +1,5 @@
 # Stage 0. Build the binary
-FROM golang:1.19 as builder
+FROM golang:1.21 as builder
 
 ARG TOKEN
 ENV CGO_ENABLED=0
@@ -10,16 +10,9 @@ RUN if [ -z $TOKEN ]; then echo "TOKEN is not set. Skip git configuration."; els
 
 WORKDIR /go/src/myapp
 COPY go.mod .
-COPY go.sum .
-RUN go mod download
+RUN go mod tidy
 COPY . .
 RUN go build -a --installsuffix cgo --ldflags="-s" -o bin/main
-
-RUN apt-get -y update
-RUN apt-get install -y --no-install-recommends asciidoctor
-RUN asciidoctor --version
-RUN mkdir -p static/docs
-RUN asciidoctor asciidoc/api.adoc -o static/docs/api.html
 
 # Stage 1. Manage certs
 FROM alpine:3 as certs
@@ -42,9 +35,6 @@ COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copying application and config from previous stage
 COPY --from=builder /go/src/myapp/bin/main main
-
-# Copying static files
-COPY --from=builder /go/src/myapp/static static
 
 RUN addgroup -g 2001 osca && adduser -D -H -u 2001 -G osca osca
 
