@@ -39,7 +39,7 @@ build_and_push_image:
   script:
     - sed -i "s/<CUSTOMER>/${CUSTOMER}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
     - sed -i "s/<ENVIRONMENT>/${CI_ENVIRONMENT_NAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
-    - sed -i "s/<BUCKETNAME>/${BUCKET_NAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
+    - sed -i "s/<BUCKETNAME>/${BUCKETNAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
     - deploy_and_start_service
 
 deploy-TU:
