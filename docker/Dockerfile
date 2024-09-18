@@ -24,7 +24,6 @@ RUN update-ca-certificates
 # Stage 2. Run the previous-built binary
 FROM busybox:1.35
 
-ENV PORT 8080
 ENV fluenthost fluentbit
 
 RUN mkdir /app
@@ -38,8 +37,6 @@ COPY --from=builder /go/src/myapp/qc-result-validator qc-result-validator
 COPY google-account-key.json /google-account-key.json
 
 RUN addgroup -g 2001 osca && adduser -D -H -u 2001 -G osca osca
-
-EXPOSE $PORT
 
 USER osca
 
