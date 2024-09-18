@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceRoot}",
+            "env": {
+                "GOOGLE_APPLICATION_CREDENTIALS": ".do-not-commit/account-key.json",
+                "GCLOUD_PROJECT_ID": "setlog-rossmann-qc",
+                "GCLOUD_LOCATION": "europe-west3",
+                "GCLOUD_BUCKETNAME": "gs://prod-files-rossmann-qc/delivery"
+            },
+            "args": [],
+            "showLog": true
+        }
+    ]
+}

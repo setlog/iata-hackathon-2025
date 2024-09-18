@@ -1,0 +1,56 @@
+include:
+  # See https://gitlab.setlog.lan/setlog/pipeline-templates/-/blob/main/inc/golang-ci.yml
+  - project: "setlog/pipeline-templates"
+    file: "inc/golang-ci.yml"
+    ref: "v2.18"
+
+stages:
+  - "test"
+  - "build"
+  - "deploy"
+
+variables:
+  IMAGE_BASE_NAME: "${GLOBAL_CONTAINER_REGISTRY}/${GCR_PROJECT_NAME}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}"
+
+build_and_push_image:
+  stage: "build"
+  image: "${GLOBAL_CONTAINER_REGISTRY}/setlog/images/build/ci:v2023.7"
+  script:
+    - set -u
+    - echo "${GCR_SERVICE_ACCOUNT}" | docker login -u _json_key --password-stdin https://${GLOBAL_CONTAINER_REGISTRY}
+    - TAG_NAME=$(echo -n "${CI_COMMIT_REF_NAME}" | tr / _) # replace illegal chars for tags
+    - IMAGE_NAME=${GLOBAL_CONTAINER_REGISTRY}/${GCR_PROJECT_NAME}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}:${TAG_NAME}
+    - docker build --pull --build-arg TOKEN=${CI_JOB_TOKEN} --file docker/Dockerfile -t ${IMAGE_NAME} .
+    - echo "Pushing image ${IMAGE_NAME}"
+    - docker push ${IMAGE_NAME}
+  rules:
+    - if: "$CI_COMMIT_TAG"
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+
+.deploy:
+  stage: "deploy"
+  image: "${GLOBAL_CONTAINER_REGISTRY}/setlog/deployment_utils/docker_service:${DOCKER_SERVICE_VERSION}"
+  when: manual
+  before_script:
+    - if [ -z ${CUSTOMER+x} ];                   then echo "Please set the variable CUSTOMER for this environment"; exit 1; fi
+  script:
+    - sed -i "s/<CUSTOMER>/${CUSTOMER}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
+    - sed -i "s/<ENVIRONMENT>/${CI_ENVIRONMENT_NAME}/g" docker/docker-compose_${CI_ENVIRONMENT_NAME}.yml
+    - deploy_and_start_service
+
+deploy-TU:
+  extends: .deploy
+  environment:
+    name: "TU"
+  variables:
+    IMAGE_TAG: "master"
+  only: [ "master" ]
+
+deploy-UAT:
+  extends: .deploy
+  environment:
+    name: "UAT"
+  variables:
+    IMAGE_TAG: "$CI_COMMIT_TAG"
+  when: manual
+  only: [ "uat" ]
