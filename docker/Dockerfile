@@ -12,7 +12,7 @@ WORKDIR /go/src/myapp
 COPY go.mod .
 RUN go mod tidy
 COPY . .
-RUN go build -a --installsuffix cgo --ldflags="-s" -o qc-result-validator
+RUN go build -o qc-result-validator
 
 # Stage 1. Manage certs
 FROM alpine:3 as certs
