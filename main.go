@@ -9,8 +9,10 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"cloud.google.com/go/vertexai/genai"
 	"github.com/gorilla/mux"
 )
@@ -107,6 +109,11 @@ func generateContentFromPDF(fileName string) (*ResponseVertexAI, error) {
 	modelName := "gemini-1.5-flash-001"
 	projectID := os.Getenv("GCLOUD_PROJECT_ID")
 	location := os.Getenv("GCLOUD_LOCATION")
+	bucketName := os.Getenv("GCLOUD_BUCKETNAME")
+
+	if err := waitUntilFileExists(bucketName, fileName); err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
@@ -119,7 +126,7 @@ func generateContentFromPDF(fileName string) (*ResponseVertexAI, error) {
 
 	part := genai.FileData{
 		MIMEType: "application/pdf",
-		FileURI:  fmt.Sprintf("%s/%s", os.Getenv("GCLOUD_BUCKETNAME"), fileName),
+		FileURI:  fmt.Sprintf("%s/%s", bucketName, fileName),
 	}
 
 	model.SafetySettings = []*genai.SafetySetting{
@@ -147,4 +154,51 @@ func generateContentFromPDF(fileName string) (*ResponseVertexAI, error) {
 	}
 
 	return &result, nil
+}
+
+func waitUntilFileExists(bucketName, fileName string) error {
+	bucketName, _ = strings.CutPrefix(bucketName, "gs://")
+	parts := strings.SplitN(bucketName, "/", 2)
+	if len(parts) > 1 {
+		bucketName = parts[0]
+		fileName = parts[1] + "/" + fileName
+	}
+	timeOutInSeconds := 60
+	for i := 0; i < timeOutInSeconds; i++ {
+		bExists, err := isFileExist(bucketName, fileName)
+		if bExists {
+			return nil
+		}
+		if err != nil {
+			logger.Warn("cannot read the cloud file", slog.String("bucket", bucketName), slog.String("file", fileName), slog.Any("error", err))
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return fmt.Errorf("timeout occured while reading the bucket %s, file %s", bucketName, fileName)
+}
+
+func isFileExist(bucketName, fileName string) (bool, error) {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return false, fmt.Errorf("failed to create client: %v", err)
+	}
+	defer client.Close()
+
+	// Get the object handle
+	obj := client.Bucket(bucketName).Object(fileName)
+
+	// Try to get the attributes of the object
+	_, err = obj.Attrs(ctx)
+	if err != nil {
+		// If the error is a "NotFound" error, the file doesn't exist
+		if err == storage.ErrObjectNotExist {
+			return false, nil
+		}
+		// Other errors should be handled accordingly
+		return false, fmt.Errorf("failed to get object attributes: %v", err)
+	}
+
+	// The object exists
+	return true, nil
 }
