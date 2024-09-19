@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -38,9 +39,12 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/testvalidation", handlerFunc)
 
+	port := 8080
+	slog.Info("Service has started at the port %d...", port)
+
 	srv := &http.Server{
 		Handler:      r,
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -53,6 +57,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	fileName := req.URL.Query().Get("fileName")
 	if fileName == "" {
 		w.WriteHeader(http.StatusBadRequest)
+		slog.Error("parameter 'fileName' not found.")
 		fmt.Fprint(w, "parameter 'fileName' not found.")
 		return
 	}
@@ -60,6 +65,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	responseVertexAI, err := generateContentFromPDF(fileName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("%v", err)
 		fmt.Fprintf(w, "%v", err)
 		return
 	}
@@ -68,6 +74,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	answer, err := json.Marshal(testValidationResp)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error("%v", err)
 		fmt.Fprintf(w, "%v", err)
 		return
 	}
