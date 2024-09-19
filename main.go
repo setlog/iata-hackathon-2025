@@ -15,11 +15,14 @@ import (
 )
 
 const promptVertexAI = `You are a very professional specialist in quality control of the consumer goods.
-            Please summarize the given document and report me, if the test results in this document show a passed or failed status.
-            Give me a feedback as plain json (no "json" encasing) with fields "Status", "Summary", a list of tested product features in "Results" and the reason of failure in "ReasonOfFailure", if it failed
+            Please check if the given document is a report of a consumer good quality control test.
+            If it is one, then please summarize the given document and report me, if the test results in this document show a passed or failed status.
+            If it is not, then please set the Status to "UNDEFINED", "DocumentType" to the corresponding description and the rest of the fields to null.
+            Give me a feedback as plain json (no json encasing) with fields "Status", "Summary", a list of tested product features in "Results" and the reason of failure in "ReasonOfFailure", if it failed
 Here is the remplate for the response json struct
 {
-    "Status": "PASS" | "FAIL",
+    "DocumentType": "REPORT" | "<string with the description of what the document is>",
+    "Status": "PASS" | "FAIL" | "UNDEFINED",
     "Summary": "<summary text>",
     "Results": [
         {
@@ -74,10 +77,18 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 }
 
 func convertResponse(responseVertexAI ResponseVertexAI) TestValidationResponse {
-	return TestValidationResponse{
+	result := TestValidationResponse{
+		DocumentType:    responseVertexAI.Type,
 		Status:          responseVertexAI.Status,
 		ReasonOfFailure: responseVertexAI.ReasonOfFailure,
 	}
+	for _, t := range responseVertexAI.Results {
+		result.Items = append(result.Items, TestValidationItem{
+			Test:   t.Name,
+			Status: t.Status,
+		})
+	}
+	return result
 }
 
 // generateContentFromPDF generates a response into the provided io.Writer, based upon the PDF

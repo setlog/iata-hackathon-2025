@@ -6,13 +6,21 @@ type ResponseItemVertexAI struct {
 }
 
 type ResponseVertexAI struct {
+	Type            string                 `json:"DocumentType"`
 	Status          string                 `json:"Status"`
 	Summary         string                 `json:"Summary"`
 	Results         []ResponseItemVertexAI `json:"Results"`
 	ReasonOfFailure string                 `json:"ReasonOfFailure"`
 }
 
+type TestValidationItem struct {
+	Test   string `json:"Test"`
+	Status string `json:"ItemStatus"`
+}
+
 type TestValidationResponse struct {
-	Status          string `json:"Status"`
-	ReasonOfFailure string `json:"ReasonOfFailure"`
+	DocumentType    string               `json:"DocumentType"`
+	Status          string               `json:"Status"`
+	ReasonOfFailure string               `json:"ReasonOfFailure"`
+	Items           []TestValidationItem `json:"Items"`
 }
