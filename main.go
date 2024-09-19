@@ -35,12 +35,16 @@ Here is the remplate for the response json struct
     "ReasonOfFailure": "<description of the reason the test failed, empty string if the test passed>"
 }`
 
+var logger *slog.Logger = nil
+
 func main() {
+	logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	r := mux.NewRouter()
 	r.HandleFunc("/testvalidation", handlerFunc)
 
 	port := 8080
-	slog.Info("Service has started at the port %d...", port)
+	logger.Info("Service has started", slog.Int("port", port))
 
 	srv := &http.Server{
 		Handler:      r,
@@ -57,7 +61,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	fileName := req.URL.Query().Get("fileName")
 	if fileName == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		slog.Error("parameter 'fileName' not found.")
+		logger.Error("parameter 'fileName' not found.")
 		fmt.Fprint(w, "parameter 'fileName' not found.")
 		return
 	}
@@ -65,7 +69,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	responseVertexAI, err := generateContentFromPDF(fileName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("%v", err)
+		logger.Error("%v", slog.Any("error", err))
 		fmt.Fprintf(w, "%v", err)
 		return
 	}
@@ -74,7 +78,7 @@ func handlerFunc(w http.ResponseWriter, req *http.Request) {
 	answer, err := json.Marshal(testValidationResp)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		slog.Error("%v", err)
+		logger.Error("%v", slog.Any("error", err))
 		fmt.Fprintf(w, "%v", err)
 		return
 	}
