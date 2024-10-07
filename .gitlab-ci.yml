@@ -2,7 +2,7 @@ include:
   # See https://gitlab.setlog.lan/setlog/pipeline-templates/-/blob/main/inc/golang-ci.yml
   - project: "setlog/pipeline-templates"
     file: "inc/golang-ci.yml"
-    ref: "v2.25"
+    ref: "v2.26"
 
 stages:
   - "test"
