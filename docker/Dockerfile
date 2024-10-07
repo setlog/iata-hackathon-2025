@@ -22,7 +22,7 @@ COPY docker/rds-* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 # Stage 2. Run the previous-built binary
-FROM busybox:1.35
+FROM busybox:1.37
 
 ENV fluenthost fluentbit
 
