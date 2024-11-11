@@ -11,6 +11,10 @@ type ResponseVertexAI struct {
 	Summary         string                 `json:"Summary"`
 	Results         []ResponseItemVertexAI `json:"Results"`
 	ReasonOfFailure string                 `json:"ReasonOfFailure"`
+	TestReportNo    string                 `json:"TestReportNo"`
+	TesteDate       string                 `json:"TestDate"`
+	DateFormatUsed  string                 `json:"DateFormatUsed"`
+	Lab             string                 `json:"Lab"`
 }
 
 type TestValidationItem struct {
@@ -23,4 +27,8 @@ type TestValidationResponse struct {
 	Status          string               `json:"Status"`
 	ReasonOfFailure string               `json:"ReasonOfFailure"`
 	Items           []TestValidationItem `json:"Items"`
+	TestReportNo    string               `json:"TestReportNo"`
+	TesteDate       string               `json:"TestDate"`
+	DateFormatUsed  string               `json:"DateFormatUsed"`
+	Lab             string               `json:"Lab"`
 }
