@@ -8,7 +8,7 @@
             "mode": "debug",
             "program": "${workspaceRoot}/cmd",
             "env": {
-                "GOOGLE_APPLICATION_CREDENTIALS": "../.do-not-commit/account-key.json",
+                "GOOGLE_APPLICATION_CREDENTIALS": "../do-not-commit/account-key.json",
                 "GCLOUD_PROJECT_ID": "setlog-rossmann-qc",
                 "GCLOUD_LOCATION": "europe-west3",
                 "GCLOUD_BUCKETNAME": "gs://test-files-rossmann-qc/delivery",

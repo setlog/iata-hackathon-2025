@@ -2,14 +2,14 @@ package model
 
 type ProductTestResponseItemVertexAI struct {
 	Name   string `json:"Test"`
-	Status string `json:"Status"`
+	Status string `json:"ItemStatus"`
 }
 
 type ProductTestResponseVertexAI struct {
 	Type            string                            `json:"DocumentType"`
 	Status          string                            `json:"Status"`
 	Summary         string                            `json:"Summary"`
-	Results         []ProductTestResponseItemVertexAI `json:"Results"`
+	Items           []ProductTestResponseItemVertexAI `json:"Items"`
 	ReasonOfFailure string                            `json:"ReasonOfFailure"`
 	TestReportNo    string                            `json:"TestReportNo"`
 	TesteDate       string                            `json:"TestDate"`
@@ -18,8 +18,8 @@ type ProductTestResponseVertexAI struct {
 }
 
 type ProductTestValidationItem struct {
-	Test   string `json:"Test"`
-	Status string `json:"ItemStatus"`
+	Test       string `json:"Test"`
+	ItemStatus string `json:"ItemStatus"`
 }
 
 type ProductTestValidationResponse struct {

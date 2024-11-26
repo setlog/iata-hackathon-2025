@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"com.setlog/internal/configuration"
-	"com.setlog/internal/service"
 	"fmt"
 	"log/slog"
 	"net/http"
+
+	"com.setlog/internal/configuration"
+	"com.setlog/internal/service"
 )
 
 type AiHandler struct {
@@ -28,7 +29,7 @@ func (h *AiHandler) ProductTestHandlerFunc(w http.ResponseWriter, req *http.Requ
 		fmt.Fprint(w, "parameter 'fileName' not found.")
 		return
 	}
-	answer, err := h.inspection.AnalysePdfFile(fileName)
+	answer, err := h.product.AnalysePdfFile(fileName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		slog.Error("%v", slog.Any("error", err))

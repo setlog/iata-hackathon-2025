@@ -64,10 +64,10 @@ func (p *ProductTestService) convertResponse(responseVertexAI *model.ProductTest
 		DateFormatUsed:  responseVertexAI.DateFormatUsed,
 		Lab:             responseVertexAI.Lab,
 	}
-	for _, t := range responseVertexAI.Results {
+	for _, t := range responseVertexAI.Items {
 		result.Items = append(result.Items, model.ProductTestValidationItem{
-			Test:   t.Name,
-			Status: t.Status,
+			Test:       t.Name,
+			ItemStatus: t.Status,
 		})
 	}
 	return result
