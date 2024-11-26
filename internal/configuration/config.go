@@ -1,7 +1,12 @@
 package configuration
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
+	"log"
+	"log/slog"
+	"os"
+	"path/filepath"
 )
 
 type Config struct {
@@ -14,6 +19,11 @@ type Config struct {
 }
 
 func NewConfig() (error, *Config) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
 	env := Config{}
 	v := viper.New()
 	v.AutomaticEnv()
@@ -26,7 +36,8 @@ func NewConfig() (error, *Config) {
 			return err, nil
 		}
 	}
-	err := v.Unmarshal(&env)
+	slog.Info(v.ConfigFileUsed())
+	err = v.Unmarshal(&env)
 	if err != nil {
 		return err, nil
 	}
