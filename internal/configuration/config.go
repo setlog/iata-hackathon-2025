@@ -16,18 +16,17 @@ type Config struct {
 func NewConfig() (error, *Config) {
 	env := Config{}
 	v := viper.New()
-	v.SetConfigFile(".env")
-	//docker
-	v.AddConfigPath("/app")
-	//local
-	v.AddConfigPath("./")
-
-	err := v.ReadInConfig()
-	if err != nil {
-		return err, nil
+	v.AutomaticEnv()
+	if len(v.AllKeys()) == 0 {
+		v.SetConfigType("env")
+		v.SetConfigFile(".env")
+		v.AddConfigPath(".")
+		err := v.ReadInConfig()
+		if err != nil {
+			return err, nil
+		}
 	}
-
-	err = v.Unmarshal(&env)
+	err := v.Unmarshal(&env)
 	if err != nil {
 		return err, nil
 	}
