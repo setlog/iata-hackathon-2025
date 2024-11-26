@@ -6,12 +6,15 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceRoot}",
+            "program": "${workspaceRoot}/cmd",
             "env": {
-                "GOOGLE_APPLICATION_CREDENTIALS": ".do-not-commit/account-key.json",
+                "GOOGLE_APPLICATION_CREDENTIALS": "../.do-not-commit/account-key.json",
                 "GCLOUD_PROJECT_ID": "setlog-rossmann-qc",
                 "GCLOUD_LOCATION": "europe-west3",
-                "GCLOUD_BUCKETNAME": "gs://prod-files-rossmann-qc/delivery"
+                "GCLOUD_BUCKETNAME": "gs://test-files-rossmann-qc/delivery",
+                "AI_MODEL": "gemini-1.5-flash-001",
+                "OAUTH_CLIENT_IDS":"josca.dc,configuration.dc",
+                "OAUTH_ISSUER":"https://auth.test-ecosystem.setlog.com"
             },
             "args": [],
             "showLog": true
