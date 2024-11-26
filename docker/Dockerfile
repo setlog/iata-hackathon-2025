@@ -8,6 +8,12 @@ ENV GO111MODULE=on
 # We need this to clone private repo's from our gitlab
 RUN if [ -z $TOKEN ]; then echo "TOKEN is not set. Skip git configuration."; else git config --global http.sslVerify false; git config --global url."https://gitlab-ci-token:${TOKEN}@gitlab.setlog.lan/".insteadOf "https://gitlab.setlog.lan/"; fi
 
+
+ENV GONOPROXY="gitlab.setlog.lan"
+ENV GOPRIVATE="gitlab.setlog.lan"
+ENV GOINSECURE="gitlab.setlog.lan/*"
+
+
 WORKDIR /go/src/myapp
 COPY go.mod .
 RUN go mod tidy
