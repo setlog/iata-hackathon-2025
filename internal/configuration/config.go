@@ -15,14 +15,17 @@ type Config struct {
 
 func NewConfig() (error, *Config) {
 	env := Config{}
-	viper.AutomaticEnv()
+	v := viper.New()
+	v.SetConfigFile(".env")
+	v.AddConfigPath("./")
+	v.AddConfigPath("/app")
 
-	err := viper.ReadInConfig()
+	err := v.ReadInConfig()
 	if err != nil {
 		return err, nil
 	}
 
-	err = viper.Unmarshal(&env)
+	err = v.Unmarshal(&env)
 	if err != nil {
 		return err, nil
 	}
