@@ -17,8 +17,10 @@ func NewConfig() (error, *Config) {
 	env := Config{}
 	v := viper.New()
 	v.SetConfigFile(".env")
-	v.AddConfigPath("./")
+	//docker
 	v.AddConfigPath("/app")
+	//local
+	v.AddConfigPath("./")
 
 	err := v.ReadInConfig()
 	if err != nil {
