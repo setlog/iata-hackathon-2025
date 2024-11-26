@@ -3,7 +3,6 @@ package main
 import (
 	conf "com.setlog/internal/configuration"
 	"com.setlog/internal/handler"
-	"com.setlog/internal/middleware"
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
@@ -21,7 +20,7 @@ func main() {
 	hand := handler.NewAiHandler(configuration)
 
 	r := mux.NewRouter()
-	r.Use(middleware.AuthMiddleware(configuration))
+	//r.Use(middleware.AuthMiddleware(configuration))
 	r.HandleFunc("/producttestreportanalysis", hand.ProductTestHandlerFunc)
 	r.HandleFunc("/inspectionreportanalysis", hand.InspectionHandlerFunc)
 
