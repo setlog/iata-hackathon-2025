@@ -30,7 +30,7 @@ func NewConfig() (error, *Config) {
 	if len(v.AllKeys()) == 0 {
 		v.SetConfigType("env")
 		v.SetConfigFile(".env")
-		v.AddConfigPath(".")
+		v.AddConfigPath("/app")
 		err := v.ReadInConfig()
 		if err != nil {
 			return err, nil

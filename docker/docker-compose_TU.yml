@@ -12,6 +12,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/TZ:ro
+      - .env:/app/.env:ro
     mem_limit: "100m"
     memswap_limit: "150m"
     labels:
