@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type AiHandler struct {
@@ -78,6 +79,7 @@ func (h *AiHandler) HwbReportHandlerFuncAll(writer http.ResponseWriter, request 
 			fmt.Println("error while parsing file", err)
 			continue
 		}
+		time.Sleep(500 * time.Millisecond)
 	}
 	fmt.Println("done")
 }

@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"com.setlog/internal/model"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -16,5 +17,11 @@ func (h *AiHandler) Json2Iata(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 
-	fmt.Println(string(body))
+	var resp *model.HwbReportResponseVertexAi
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		slog.Error("error while reading body", slog.Any("error", err))
+		return
+	}
 }

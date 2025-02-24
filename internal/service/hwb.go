@@ -29,31 +29,31 @@ const promptHwbVertexAI = `You are an expert air freight forwarder. Your task is
    "poa": <Port of arrival>,
    "etd": <Date of departure as RFC3339>,
    "eta": <Date of arrival as RFC3339>,
-   "flightNo": <Flight number>,
+   "flightNo": <Flight number as string>,
    "carrierName": <Unique name of a carrier company as a string>,
    "carrierAddress": <Address of a carrier company as a string>,
-   "cargoAgentCode": <cargo agent code as a string>,"
+   "cargoAgentCode": <cargo agent code as a string as string>,"
    "shipperName": <Unique name of a shipper as a string>,
    "shipperAddress": <Address name of a shipper as a string>,
    "consigneeName": <Unique name of a consignee as a string>,
    "consigneeAddress": <Unique name of a consignee as a string>,
-   "totalGrossWeight": <Total gross weight of the goods, in kg>,
+   "totalGrossWeight": <Total gross weight of the goods, in kg as a string>,
    "handlingInstructions": <handling instructions, information about how to transport the goods>
    "totalDimensions": {
-       "length": <length of the load, in cm>,
-       "width": <width of the load, in cm>,
-       "height": <height of the load, in cm>,
+       "length": <length of the load, in cm as a string>,
+       "width": <width of the load, in cm as a string>,
+       "height": <height of the load, in cm as a string>,
        "unit": <measurement unit as a string>
    },
    "shipmentOfPieces" : [
        {
-            "itemNumber": <unique number or identifier of the item>,
+            "itemNumber": <unique number or identifier of the item as string>,
             "itemDescription": <description of transported item as a string>,
-            "quantity": <number of pieces>,
-            "cartons": <number of cartons>,
-            "weight": <total weight of items>,
-            "unit": <measurement unit>,
-            "hsCode": <customs clearance code>,
+            "quantity": <number of pieces as string>,
+            "cartons": <number of cartons as string>,
+            "weight": <total weight of items as string>,
+            "unit": <measurement unit as string>,
+            "hsCode": <customs clearance code as string>,
             "manufacturer": <unique name of a manufacturer>
        }
    ]
