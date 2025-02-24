@@ -3,6 +3,7 @@ package service
 import (
 	"com.setlog/internal/model/iata"
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"com.setlog/internal/configuration"
@@ -104,12 +105,31 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		HandlingInstructions: nil,
 	}
 	entityCollection.Pieces = append(entityCollection.Pieces, piece)
+	totalDimensions := iata.TotalDimensions{
+		Height: iata.Measurement{
+			Type:           "cargo:Measurement",
+			Unit:           responseVertexAI.TotalDimensions.Unit,
+			NumericalValue: convertRawValueToNumericalValue(responseVertexAI.TotalDimensions.Height),
+		},
+		Length: iata.Measurement{
+			Type:           "cargo:Measurement",
+			Unit:           responseVertexAI.TotalDimensions.Unit,
+			NumericalValue: convertRawValueToNumericalValue(responseVertexAI.TotalDimensions.Length)},
+		Width: iata.Measurement{
+			Type:           "cargo:Measurement",
+			Unit:           responseVertexAI.TotalDimensions.Unit,
+			NumericalValue: convertRawValueToNumericalValue(responseVertexAI.TotalDimensions.Width)},
+		Volume: iata.Measurement{
+			Type:           "cargo:Measurement",
+			Unit:           responseVertexAI.TotalDimensions.Unit,
+			NumericalValue: calculateVolume(responseVertexAI.TotalDimensions)},
+	}
 	shipment := iata.Shipment{
 		Context:          context,
 		Type:             "cargo:Shipment",
 		GoodsDescription: strings.Join(itemDescriptions, ", "),
-		TotalGrossWeight: iata.Measurement{},
-		TotalDimensions:  iata.TotalDimensions{},
+		TotalGrossWeight: iata.Measurement{Type: "cargo:Value", Unit: "KG", NumericalValue: convertRawValueToNumericalValue(responseVertexAI.TotalGrossWeight)},
+		TotalDimensions:  totalDimensions,
 		ShipmentOfPieces: nil,
 		InvolvedParties:  nil,
 	}
@@ -117,4 +137,13 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 	hwb := iata.Hwb{Context: context, Type: "cargo:Waybill", WaybillNumber: responseVertexAI.Hawb, WaybillType: "house"}
 	entityCollection.Hwbs = append(entityCollection.Hwbs, hwb)
 	return &entityCollection
+}
+
+func convertRawValueToNumericalValue(rawValue string) float64 {
+	convertedValue, _ := strconv.ParseFloat(rawValue, 64)
+	return convertedValue
+}
+
+func calculateVolume(totalDimensions model.TotalDimensions) float64 {
+	return convertRawValueToNumericalValue(totalDimensions.Height) * convertRawValueToNumericalValue(totalDimensions.Length) * convertRawValueToNumericalValue(totalDimensions.Width)
 }

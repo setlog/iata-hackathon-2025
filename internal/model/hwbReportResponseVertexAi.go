@@ -26,7 +26,7 @@ type TotalDimensions struct {
 	Length string `json:"length"`
 	Width  string `json:"width"`
 	Height string `json:"height"`
-	Volume string `json:"volume"`
+	Unit   string `json:"unit"`
 }
 
 type Pieces struct {

@@ -16,11 +16,11 @@ func NewIataService(config *configuration.Config, token *TokenService) *IataServ
 	return &IataService{config: config, token: token}
 }
 func (service *IataService) CreateIataData(data *model.EntityCollection) error {
-	err, locations := service.createItemData(data.Items)
+	err, itemLocations := service.createItemData(data.Items)
 	if err != nil {
 		return err
 	}
-	err, pieceLocations := service.createPieceData(data.Pieces, locations)
+	err, pieceLocations := service.createPieceData(data.Pieces, itemLocations)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (service *IataService) createHwbData(data []iata.Hwb, shipLoc string, orga 
 	return nil
 }
 func (service *IataService) createOrganisationData(data []iata.Organization) (error, map[string]string) {
-	var orgLoc map[string]string
+	orgLoc := make(map[string]string)
 	for _, org := range data {
 		payload, err := json.Marshal(org)
 		if err != nil {
@@ -116,10 +116,12 @@ func (service *IataService) createOrganisationData(data []iata.Organization) (er
 	return nil, orgLoc
 }
 
-func (service *IataService) createPieceData(pieces []iata.Piece, locations []string) (error, []string) {
+func (service *IataService) createPieceData(pieces []iata.Piece, itemLocations []string) (error, []string) {
 	var loc []string
 	for _, piece := range pieces {
-
+		for _, itemLocation := range itemLocations {
+			piece.ContainedItems = append(piece.ContainedItems, iata.ObjectLink{Id: itemLocation})
+		}
 		payload, err := json.Marshal(piece)
 		if err != nil {
 			return err, nil
@@ -135,7 +137,7 @@ func (service *IataService) createPieceData(pieces []iata.Piece, locations []str
 }
 
 func (service *IataService) createItemData(items []iata.Item) (error, []string) {
-	var createdProducts map[string]string
+	createdProducts := make(map[string]string)
 	var locations []string
 	for _, item := range items {
 		product := item.RawProduct

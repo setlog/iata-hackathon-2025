@@ -110,7 +110,7 @@ func (o *TokenService) RequestData(method string, url string, payload []byte) (e
 	if err != nil {
 		return err, nil, ""
 	}
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode >= 300 {
 		slog.Error("Non-OK HTTP status:", res.StatusCode)
 		return errors.New("Non-OK HTTP status: " + res.Status), nil, ""
 	}
