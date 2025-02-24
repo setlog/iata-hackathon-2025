@@ -1,0 +1,33 @@
+{
+  "hawb" : "HTC242595",
+  "issuedOn" : "2024-12-31T00:00:00Z",
+  "pol" : "DAC",
+  "poa" : "HAM",
+  "etd" : "2024-12-31T00:00:00Z",
+  "eta" : null,
+  "flightNo" : "BS-361",
+  "carrierName" : "HT CARGO SERVICE LTD",
+  "carrierAddress" : "(4th Floor), House-01, Road-05, Sector-01, Uttara,\nDhaka-1230, Bangladesh. TEL: +88-02-58957544;\nEmail: mamun@htcargoservice.com;\nFFFW License: 101-11-3-0535;",
+  "shipperName" : "YOUNGONE HI-TECH SPORTS WEAR INDUSTRIES LTD.",
+  "shipperAddress" : "PLOT NO: 1-4,9-12 DHAKA EXPORT PROCESSING ZONE SAVAR, DHAKA,\nBANGLADESH. TEL: 880-2-7789025-7,\nFAX: 880-2-7789023, 7789031",
+  "consigneeName" : "JACK WOLFSKIN GMBH & CO. KGAA",
+  "consigneeAddress" : "JACK WOLFSKIN KREISEL 1 65510 IDSTEIN\nGERMANY. EORI NO: DE2250403",
+  "totalGrossWeight" : "269.00",
+  "handlingInstructions" : null,
+  "totalDimensions" : {
+    "length" : null,
+    "width" : null,
+    "height" : null,
+    "volume" : null
+  },
+  "shipmentOfPieces" : [ {
+    "itemNumber" : null,
+    "itemDescription" : "READY MADE GARMENTS\nW'S JACKET\nM'S JACKET",
+    "quantity" : null,
+    "cartons" : null,
+    "weight" : null,
+    "unit" : null,
+    "hsCode" : "6210.20.00100,6210.30.00100",
+    "manufacturer" : null
+  } ]
+}
