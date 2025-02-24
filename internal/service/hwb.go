@@ -1,7 +1,9 @@
 package service
 
 import (
+	"com.setlog/internal/model/iata"
 	"encoding/json"
+	"strings"
 
 	"com.setlog/internal/configuration"
 	"com.setlog/internal/model"
@@ -45,6 +47,66 @@ func (i *HwbService) AnalysePdfFile(filename string) (*model.EntityCollection, e
 }
 
 func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVertexAi) *model.EntityCollection {
-
-	return nil
+	entityCollection := model.EntityCollection{}
+	context := iata.Context{Cargo: "https://onerecord.iata.org/ns/cargo#"}
+	carrier := iata.Organization{
+		Context: context,
+		Type:    "cargo:Organization",
+		Name:    responseVertexAI.CarrierName,
+	}
+	entityCollection.Organizations = append(entityCollection.Organizations, carrier)
+	shipper := iata.Organization{
+		Context: context,
+		Type:    "cargo:Organization",
+		Name:    responseVertexAI.ShipperName,
+	}
+	entityCollection.Organizations = append(entityCollection.Organizations, shipper)
+	consignee := iata.Organization{
+		Context: context,
+		Type:    "cargo:Organization",
+		Name:    responseVertexAI.ConsigneeName,
+	}
+	entityCollection.Organizations = append(entityCollection.Organizations, consignee)
+	var itemDescriptions []string
+	for _, p := range responseVertexAI.ShipmentOfPieces {
+		product := iata.Product{
+			Context:          context,
+			Type:             "cargo:Product",
+			Description:      p.ItemDescription,
+			HsCode:           p.HsCode,
+			UniqueIdentifier: p.ItemNumber,
+		}
+		item := iata.Item{
+			Context:     context,
+			Type:        "cargo:Item",
+			Measurement: iata.Measurement{Type: "cargo:Value", Unit: p.Unit, NumericalValue: float64(p.Quantity)},
+			RawProduct:  product,
+		}
+		entityCollection.Products = append(entityCollection.Products, product)
+		entityCollection.Items = append(entityCollection.Items, item)
+		itemDescriptions = append(itemDescriptions, p.ItemDescription)
+	}
+	piece := iata.Piece{
+		Context:              context,
+		Type:                 "cargo:Piece",
+		Coload:               true,
+		GoodsDescription:     strings.Join(itemDescriptions, ", "),
+		Upid:                 "",
+		ContainedItems:       nil,
+		HandlingInstructions: nil,
+	}
+	entityCollection.Pieces = append(entityCollection.Pieces, piece)
+	shipment := iata.Shipment{
+		Context:          context,
+		Type:             "cargo:Shipment",
+		GoodsDescription: strings.Join(itemDescriptions, ", "),
+		TotalGrossWeight: iata.Measurement{},
+		TotalDimensions:  iata.TotalDimensions{},
+		ShipmentOfPieces: nil,
+		InvolvedParties:  nil,
+	}
+	entityCollection.Shipments = append(entityCollection.Shipments, shipment)
+	hwb := iata.Hwb{Context: context, Type: "cargo:Waybill", WaybillNumber: responseVertexAI.Hawb, WaybillType: "house"}
+	entityCollection.Hwbs = append(entityCollection.Hwbs, hwb)
+	return &entityCollection
 }

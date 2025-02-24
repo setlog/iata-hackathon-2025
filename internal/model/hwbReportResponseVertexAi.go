@@ -17,7 +17,7 @@ type HwbReportResponseVertexAi struct {
 	TotalGrossWeight     string          `json:"totalGrossWeight"`
 	HandlingInstructions string          `json:"handlingInstructions"`
 	TotalDimensions      TotalDimensions `json:"totalDimensions"`
-	ShipmentOfPieces     Pieces          `json:"shipmentOfPieces"`
+	ShipmentOfPieces     []Pieces        `json:"shipmentOfPieces"`
 }
 
 type TotalDimensions struct {
@@ -28,7 +28,7 @@ type TotalDimensions struct {
 }
 
 type Pieces struct {
-	ItemNumber      int    `json:"itemNumber"`
+	ItemNumber      string `json:"itemNumber"`
 	ItemDescription string `json:"itemDescription"`
 	Quantity        int    `json:"quantity"`
 	Cartons         string `json:"cartons"`
