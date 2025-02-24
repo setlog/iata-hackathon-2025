@@ -67,6 +67,10 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Name:    responseVertexAI.ConsigneeName,
 	}
 	entityCollection.Organizations = append(entityCollection.Organizations, consignee)
+	factoryName := "Unknown"
+	if responseVertexAI.FactoryName != "" {
+		factoryName = responseVertexAI.FactoryName
+	}
 	var itemDescriptions []string
 	for _, p := range responseVertexAI.ShipmentOfPieces {
 		product := iata.Product{
@@ -75,6 +79,10 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 			Description:      p.ItemDescription,
 			HsCode:           p.HsCode,
 			UniqueIdentifier: p.ItemNumber,
+			Manufacturer: iata.Manufacturer{
+				Type: "cargo:Company",
+				Name: factoryName,
+			},
 		}
 		item := iata.Item{
 			Context:     context,

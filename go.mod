@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.43.0
 	cloud.google.com/go/vertexai v0.13.1
 	github.com/gorilla/mux v1.8.1
-	github.com/spf13/viper v1.19.0
+	github.com/spf13/viper v1.18.1
 )
 
 require (

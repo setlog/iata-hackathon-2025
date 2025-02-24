@@ -18,6 +18,8 @@ type HwbReportResponseVertexAi struct {
 	HandlingInstructions string          `json:"handlingInstructions"`
 	TotalDimensions      TotalDimensions `json:"totalDimensions"`
 	ShipmentOfPieces     []Pieces        `json:"shipmentOfPieces"`
+	FactoryName          string          `json:"factoryName"`
+	FactoryAdress        string          `json:"factoryAdress"`
 }
 
 type TotalDimensions struct {

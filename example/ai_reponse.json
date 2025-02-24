@@ -21,7 +21,7 @@
     "volume" : null
   },
   "shipmentOfPieces" : [ {
-    "itemNumber" : null,
+    "itemNumber" : 12345678,
     "itemDescription" : "READY MADE GARMENTS\nW'S JACKET\nM'S JACKET",
     "quantity" : null,
     "cartons" : null,

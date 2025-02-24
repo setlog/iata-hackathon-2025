@@ -139,7 +139,7 @@ func (service *IataService) createItemData(items []iata.Item) (error, []string) 
 	var locations []string
 	for _, item := range items {
 		product := item.RawProduct
-		if _, ok := createdProducts[product.UniqueIdentifier]; ok {
+		if _, ok := createdProducts[product.UniqueIdentifier]; !ok {
 			err, location := service.createProductData(&product)
 			if err != nil {
 				return err, nil
