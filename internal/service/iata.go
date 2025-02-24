@@ -5,9 +5,6 @@ import (
 	"com.setlog/internal/model"
 	"com.setlog/internal/model/iata"
 	"encoding/json"
-	"fmt"
-	"github.com/sagikazarmark/locafero"
-	"log"
 )
 
 type IataService struct {
@@ -33,9 +30,9 @@ func (service *IataService) CreateIataData(data *model.EntityCollection) error {
 	}
 	err, shipLocations := service.createShipmentData(data.Shipments, pieceLocations, orgLocations)
 	if err != nil {
-
+		return err
 	}
-	err, orgLocations := service.createHwbData(data.Hwbs, shipLocations[0], orgLocations)
+	err = service.createHwbData(data.Hwbs, shipLocations[0], orgLocations)
 	if err != nil {
 		return err
 	}
