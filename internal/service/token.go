@@ -161,7 +161,6 @@ func (o *TokenService) RequestData(method string, url string, payload []byte) (e
 	if err != nil {
 		return err, nil
 	}
-	req.Header.Add("role", "osca.customer.customer")
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("authorization", "Bearer "+o.getToken())
 	res, err := http.DefaultClient.Do(req)
