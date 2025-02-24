@@ -145,10 +145,12 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 			Description:      p.ItemDescription,
 			HsCode:           p.HsCode,
 			UniqueIdentifier: p.ItemNumber,
-			Manufacturer: iata.Manufacturer{
+		}
+		if factoryName != "" {
+			product.Manufacturer = iata.Manufacturer{
 				Type: "cargo:Company",
 				Name: factoryName,
-			},
+			}
 		}
 		item := iata.Item{
 			Context:     context,
