@@ -7,7 +7,7 @@ import (
 	"com.setlog/internal/model"
 )
 
-const promptInspectionVertexAI = `You are a very professional specialist in analysing inspections of consumer goods.
+const promptHwbVertexAI = `You are a very professional specialist in analysing inspections of consumer goods.
             Please check if the given document is a report of a consumer good inspection test.
             If it is one, then please summarize the given document and report me, if the test results in this document show a passed or failed status.
             If it is not, then please set the Status to "UNDEFINED" and the rest of the fields to null.
@@ -28,29 +28,23 @@ type HwbService struct {
 	ai     *AiCommunicationService
 }
 
-func NewHwbService(config *configuration.Config) *InspectionService {
+func NewHwbService(config *configuration.Config) *HwbService {
 	ai := NewAiCommunicationService(config)
-	return &InspectionService{config: config, ai: ai}
+	return &HwbService{config: config, ai: ai}
 }
 
-func (i *InspectionService) AnalysePdfFile(filename string) ([]byte, error) {
-	answer, err := i.ai.GenerateContentFromPDF(filename, promptInspectionVertexAI)
-	result := model.InspectionResponseVertexAI{}
+func (i *HwbService) AnalysePdfFile(filename string) (*model.InspectionTestValidationResponse, error) {
+	answer, err := i.ai.GenerateContentFromPDF(filename, promptHwbVertexAI)
+	result := model.HwbReportResponseVertexAi{}
 	err = json.Unmarshal([]byte(answer), &result)
 	if err != nil {
 		return nil, err
 	}
 	ValidationResp := i.convertResponse(&result)
-	return json.Marshal(ValidationResp)
+	return ValidationResp, nil
 }
 
-func (i *InspectionService) convertResponse(responseVertexAI *model.InspectionResponseVertexAI) model.InspectionTestValidationResponse {
-	result := model.InspectionTestValidationResponse{
-		InspectionReportNo:   responseVertexAI.InspectionReportNo,
-		InspectionDate:       responseVertexAI.InspectionDate,
-		InspectionDateFormat: responseVertexAI.InspectionDateFormat,
-		InspectionResult:     responseVertexAI.InspectionResult,
-		Inspector:            responseVertexAI.Inspector,
-	}
-	return result
+func (i *HwbService) convertResponse(responseVertexAI *model.HwbReportResponseVertexAi) *model.InspectionTestValidationResponse {
+
+	return nil
 }

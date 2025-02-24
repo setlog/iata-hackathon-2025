@@ -23,7 +23,7 @@ func main() {
 	r := mux.NewRouter()
 	//r.Use(middleware.AuthMiddleware(configuration))
 	r.HandleFunc("/hwbreportanalysis", hand.HwbReportHandlerFunc)
-	r.HandleFunc("/inspectionreportanalysis", hand.InspectionHandlerFunc)
+	//r.HandleFunc("/inspectionreportanalysis", hand.InspectionHandlerFunc)
 
 	port := 8080
 	slog.Info("Service has started", slog.Int("port", port))
