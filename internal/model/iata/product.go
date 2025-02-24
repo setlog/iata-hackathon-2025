@@ -1,6 +1,6 @@
 package iata
 
-type product struct {
+type Product struct {
 	Context          Context      `json:"@context"`
 	Type             string       `json:"@type"`
 	Description      string       `json:"cargo:description"`
