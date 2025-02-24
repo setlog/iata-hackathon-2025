@@ -21,7 +21,7 @@
     "volume" : null
   },
   "shipmentOfPieces" : [ {
-    "itemNumber" : "12345678",
+    "itemNumber" : "",
     "itemDescription" : "S JACKET",
     "quantity" : null,
     "cartons" : null,
