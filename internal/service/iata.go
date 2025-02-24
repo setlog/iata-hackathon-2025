@@ -16,7 +16,7 @@ type IataService struct {
 func NewIataService(config *configuration.Config, token *TokenService) *IataService {
 	return &IataService{config: config, token: token}
 }
-func (service *IataService) CreateIataData(data *model.InspectionTestValidationResponse) error {
+func (service *IataService) CreateIataData(data *model.EntityCollection) error {
 
 	return nil
 }

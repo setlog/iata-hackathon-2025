@@ -33,18 +33,18 @@ func NewHwbService(config *configuration.Config) *HwbService {
 	return &HwbService{config: config, ai: ai}
 }
 
-func (i *HwbService) AnalysePdfFile(filename string) (*model.InspectionTestValidationResponse, error) {
+func (i *HwbService) AnalysePdfFile(filename string) (*model.EntityCollection, error) {
 	answer, err := i.ai.GenerateContentFromPDF(filename, promptHwbVertexAI)
 	result := model.HwbReportResponseVertexAi{}
 	err = json.Unmarshal([]byte(answer), &result)
 	if err != nil {
 		return nil, err
 	}
-	ValidationResp := i.convertResponse(&result)
+	ValidationResp := i.ConvertResponse(&result)
 	return ValidationResp, nil
 }
 
-func (i *HwbService) convertResponse(responseVertexAI *model.HwbReportResponseVertexAi) *model.InspectionTestValidationResponse {
+func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVertexAi) *model.EntityCollection {
 
 	return nil
 }
