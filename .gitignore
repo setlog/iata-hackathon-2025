@@ -3,6 +3,6 @@ do-not-commit
 ai-output/*
 go.sum
 .idea
-.vscode
+.vscode/*
 .env_example
 .env
