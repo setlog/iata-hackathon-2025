@@ -21,7 +21,7 @@ func NewAiHandler(config *configuration.Config) *AiHandler {
 	return &AiHandler{product: product, inspection: inspection, config: config}
 }
 
-func (h *AiHandler) ProductTestHandlerFunc(w http.ResponseWriter, req *http.Request) {
+func (h *AiHandler) HwbReportHandlerFunc(w http.ResponseWriter, req *http.Request) {
 	fileName := req.URL.Query().Get("fileName")
 	if fileName == "" {
 		w.WriteHeader(http.StatusBadRequest)

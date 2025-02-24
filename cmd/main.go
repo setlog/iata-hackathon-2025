@@ -1,14 +1,15 @@
 package main
 
 import (
-	conf "com.setlog/internal/configuration"
-	"com.setlog/internal/handler"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
+
+	conf "com.setlog/internal/configuration"
+	"com.setlog/internal/handler"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 
 	r := mux.NewRouter()
 	//r.Use(middleware.AuthMiddleware(configuration))
-	r.HandleFunc("/producttestreportanalysis", hand.ProductTestHandlerFunc)
+	r.HandleFunc("/hwbreportanalysis", hand.HwbReportHandlerFunc)
 	r.HandleFunc("/inspectionreportanalysis", hand.InspectionHandlerFunc)
 
 	port := 8080
