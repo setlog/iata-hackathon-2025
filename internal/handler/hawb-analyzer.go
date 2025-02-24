@@ -79,7 +79,7 @@ func (h *AiHandler) HwbReportHandlerFuncAll(writer http.ResponseWriter, request 
 			fmt.Println("error while parsing file", err)
 			continue
 		}
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 	}
 	fmt.Println("done")
 }

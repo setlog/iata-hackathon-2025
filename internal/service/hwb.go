@@ -49,7 +49,7 @@ const promptHwbVertexAI = `You are an expert air freight forwarder. Your task is
        {
             "itemNumber": <unique number or identifier of the item as string>,
             "itemDescription": <description of transported item as a string>,
-            "quantity": <number of pieces as string>,
+            "quantity": <number of pieces as an integer>,
             "cartons": <number of cartons as string>,
             "weight": <total weight of items as string>,
             "unit": <measurement unit as string>,

@@ -1,6 +1,8 @@
 package model
 
 type HwbReportResponseVertexAi struct {
+	IsHawb               bool            `json:"isHawb"`
+	DocumentType         string          `json:"documentType"`
 	Hawb                 string          `json:"hawb"`
 	Issued               string          `json:"issued"`
 	Pol                  string          `json:"pol"`

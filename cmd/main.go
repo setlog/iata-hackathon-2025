@@ -25,6 +25,7 @@ func main() {
 	r.HandleFunc("/hwbreportanalysis/all", hand.HwbReportHandlerFuncAll)
 	r.HandleFunc("/hwbreportanalysis", hand.HwbReportHandlerFunc)
 	r.HandleFunc("/json2iata", hand.Json2Iata)
+	r.HandleFunc("/json2iata/all", hand.Json2IataAll)
 
 	port := 8080
 	slog.Info("Service has started", slog.Int("port", port))
