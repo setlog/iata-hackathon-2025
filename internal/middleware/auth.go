@@ -1,5 +1,6 @@
 package middleware
 
+/*
 import (
 	"com.setlog/internal/configuration"
 	"gitlab.setlog.lan/osca-dc/golang/auth.git"
@@ -27,3 +28,4 @@ func AuthMiddleware(config *configuration.Config) func(http.Handler) http.Handle
 		})
 	}
 }
+*/
