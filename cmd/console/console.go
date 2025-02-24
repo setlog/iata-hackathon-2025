@@ -37,7 +37,6 @@ func main() {
 		payloads = append(payloads, FilePayload{Payload: payload})
 		return err
 	})
-	//payload, err := os.ReadFile("../example/ai_reponse.json")
 	if err != nil {
 		return
 	}
