@@ -6,7 +6,7 @@ services:
     container_name: <CONTAINER_NAME>
     entrypoint:
       [
-        "./qc-result-validator"
+        "./hwb-parser"
       ]
     networks: [ "traefik" ]
     volumes:
@@ -28,13 +28,13 @@ services:
     environment:
       CUSTOMER: <CUSTOMER>
       ENVIRONMENT: <ENVIRONMENT>
-      GOOGLE_APPLICATION_CREDENTIALS: "/google-account-key.json"
-      GCLOUD_PROJECT_ID: "setlog-rossmann-qc"
-      GCLOUD_LOCATION: "europe-west3"
-      GCLOUD_BUCKETNAME: "gs://<BUCKETNAME>/delivery"
-      AI_MODEL: "gemini-1.5-flash-001"
-      OAUTH_CLIENT_IDS: "josca.dc,configuration.dc"
-      OAUTH_ISSUER: "https://auth.test-ecosystem.setlog.com"
+      GOOGLE_APPLICATION_CREDENTIALS: "<APPLICATION_CREDENTIALS>"
+      GCLOUD_PROJECT_ID: "<PROJECT_ID>"
+      GCLOUD_LOCATION: "<GCLOUD_LOCATION>"
+      GCLOUD_BUCKETNAME: "gs://<BUCKETNAME>/<DirName>"
+      AI_MODEL: "<AI_MODEL>"
+      OAUTH_CLIENT_IDS: "<CLIENT_IDS>"
+      OAUTH_ISSUER: "<OAUTH_ISSUER>"
     restart: always
 
 networks:
