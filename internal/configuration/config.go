@@ -5,31 +5,24 @@ import (
 )
 
 type Config struct {
-	GcProjectId    string   `mapstructure:"GCLOUD_PROJECT_ID"`
-	GcLocation     string   `mapstructure:"GCLOUD_LOCATION"`
-	GcBucketName   string   `mapstructure:"GCLOUD_BUCKETNAME"`
-	AiModel        string   `mapstructure:"AI_MODEL"`
-	OAuthIssuer    string   `mapstructure:"OAUTH_ISSUER"`
-	OAuthClientIds []string `mapstructure:"OAUTH_CLIENT_IDS"`
+	GcProjectId       string   `mapstructure:"GCLOUD_PROJECT_ID"`
+	GcLocation        string   `mapstructure:"GCLOUD_LOCATION"`
+	GcBucketName      string   `mapstructure:"GCLOUD_BUCKETNAME"`
+	AiModel           string   `mapstructure:"AI_MODEL"`
+	OAuthIssuer       string   `mapstructure:"OAUTH_ISSUER"`
+	OAuthClientIds    []string `mapstructure:"OAUTH_CLIENT_IDS"`
+	KeycloakUrl       string   `mapstructure:"KEYCLOAK_URL"`
+	OAuthClientSecret string   `mapstructure:"CLIENT_SECRET"`
+	IataServiceUrl    string   `mapstructure:"IATA_SERVICE_URL"`
+	OAuthClientId     string   `mapstructure:"OAUTH_CLIENT_ID"`
+	OAuthUser         string   `mapstructure:"OAUTH_USER"`
+	OAuthPassword     string   `mapstructure:"OAUTH_PASSWORD"`
 }
 
 func NewConfig() (error, *Config) {
 	env := Config{}
-	v := viper.New()
-	v.AutomaticEnv()
-	if len(v.AllKeys()) == 0 {
-		v.SetConfigType("env")
-		v.SetConfigFile(".env")
-		//docker
-		v.AddConfigPath("/app")
-		//local
-		v.AddConfigPath(".")
-		err := v.ReadInConfig()
-		if err != nil {
-			return err, nil
-		}
-	}
-	err := v.Unmarshal(&env)
+	viper.AutomaticEnv()
+	err := viper.Unmarshal(&env)
 	if err != nil {
 		return err, nil
 	}
