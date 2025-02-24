@@ -24,6 +24,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/hwbreportanalysis/all", hand.HwbReportHandlerFuncAll)
 	r.HandleFunc("/hwbreportanalysis", hand.HwbReportHandlerFunc)
+	r.HandleFunc("/json2iata", hand.Json2Iata)
 
 	port := 8080
 	slog.Info("Service has started", slog.Int("port", port))
@@ -31,8 +32,8 @@ func main() {
 	srv := &http.Server{
 		Handler:      r,
 		Addr:         fmt.Sprintf(":%d", port),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 10 * time.Minute,
+		ReadTimeout:  10 * time.Minute,
 	}
 
 	log.Fatal(srv.ListenAndServe())
