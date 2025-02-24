@@ -10,6 +10,7 @@ import (
 	conf "com.setlog/internal/configuration"
 	"com.setlog/internal/handler"
 	"github.com/gorilla/mux"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 	hand := handler.NewAiHandler(configuration)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/hwbreportanalysis/all", hand.HwbReportHandlerFuncAll)
 	r.HandleFunc("/hwbreportanalysis", hand.HwbReportHandlerFunc)
 
 	port := 8080

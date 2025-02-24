@@ -1,5 +1,8 @@
 .do-not-commit
+do-not-commit
+ai-output/*
 go.sum
 .idea
 ./.vscode
 .env_example
+.env

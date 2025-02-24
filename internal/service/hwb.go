@@ -2,7 +2,8 @@ package service
 
 import (
 	"com.setlog/internal/model/iata"
-	"encoding/json"
+	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -10,21 +11,73 @@ import (
 	"com.setlog/internal/model"
 )
 
-const promptHwbVertexAI = `You are a very professional specialist in analysing inspections of consumer goods.
-            Please check if the given document is a report of a consumer good inspection test.
-            If it is one, then please summarize the given document and report me, if the test results in this document show a passed or failed status.
-            If it is not, then please set the Status to "UNDEFINED" and the rest of the fields to null.
-			Also provide me general document information, i want know the inspection report number "InspectionReportNo", the inspection date "InspectionDate" and the format of the date e.g. yyyy-mm-dd "InspectionDateFormat".
-			Also give me the person who performed the inspection. This field is most often marked with "Inspected by" in the inspection report. The name of the json field is "Inspector".
-            Give me a feedback as plain json (no json encasing) with fields "InspectionResult", "InspectionDate" and "InspectionReportNo"
-Here is the remplate for the response json struct
-{
-    "InspectionResult": "PASS" | "FAIL" | "UNDEFINED",
-	"InspectionReportNo": "222416610",
-	"InspectionDate": "27-05-2024",
-	"InspectionDateFormat": "DD.MM.YYYY",
-	"Inspector": "Spark Ling"
-}`
+const promptHwbVertexAI = `You are an expert air freight forwarder. Your task is to generate a HAWB (House Air Waybill) in JSON format from the provided PDF file content.
+
+**Instructions:**
+
+1. **Parse PDF Content:** Extract the relevant information from the provided PDF content.
+2. **Required Fields:** Ensure the following required fields are present: "hawb", "totalGrossWeight", "volume", and "cargoName".If any of these fields are missing, generate an error message as described below.
+3. **Optional Fields:** For optional fields that are not found in the PDF, leave the corresponding JSON values as empty strings or null.
+4. **Data Format Variations:** Handle variations in data formats as described below.
+5. **Handling of Images: ** Pay close attention to any embedded images, specifically JPEGs, and use OCR to accurately capture any text within them. Return the results as a JSON object.
+6. **JSON Structure:**  The JSON output must strictly adhere to the following structure: json{
+   "isHawb": <decide wether the document is a HAWB or not, true or false>"
+   "documentType": <document type as a string>,
+   "hawb": <HAWB number as a string>,
+   "issuedOn": <Date of the document as RFC3339>,
+   "pol": <Port of loading>,
+   "poa": <Port of arrival>,
+   "etd": <Date of departure as RFC3339>,
+   "eta": <Date of arrival as RFC3339>,
+   "flightNo": <Flight number>,
+   "carrierName": <Unique name of a carrier company as a string>,
+   "carrierAddress": <Address of a carrier company as a string>,
+   "cargoAgentCode": <cargo agent code as a string>,"
+   "shipperName": <Unique name of a shipper as a string>,
+   "shipperAddress": <Address name of a shipper as a string>,
+   "consigneeName": <Unique name of a consignee as a string>,
+   "consigneeAddress": <Unique name of a consignee as a string>,
+   "totalGrossWeight": <Total gross weight of the goods, in kg>,
+   "handlingInstructions": <handling instructions, information about how to transport the goods>
+   "totalDimensions": {
+       "length": <length of the load, in cm>,
+       "width": <width of the load, in cm>,
+       "height": <height of the load, in cm>,
+       "unit": <measurement unit as a string>
+   },
+   "shipmentOfPieces" : [
+       {
+            "itemNumber": <unique number or identifier of the item>,
+            "itemDescription": <description of transported item as a string>,
+            "quantity": <number of pieces>,
+            "cartons": <number of cartons>,
+            "weight": <total weight of items>,
+            "unit": <measurement unit>,
+            "hsCode": <customs clearance code>,
+            "manufacturer": <unique name of a manufacturer>
+       }
+   ]
+}
+**Data Format Handling:**
+
+* Possible aliases for "item": "Purchase Order", "PO", "Style", "Article"
+* Length, width, and height can be presented in the format "<length> / <width> / <height>" or "<length> x <width> x <height>"
+* Look for a number of cartons before "CTN" or "CTNS" or "CARTONS"
+* Do not distinguish between upper and lower case for parsing the input
+* Convert "pol" and "poa" to the IATA-Code
+* Remove null values from the json to keep it compact
+* If you decide that the document is not a HAWB, return only the fields "isHawb" and "documentType" with the value "false", or the document type you think fits respectively, as JSON.
+* If the given language is not english, then translate corresponding fields to english prior to generating the JSON output.
+
+**Error Handling:**
+
+If any of the required fields ("hawb", "totalGrossWeight", "volume", and "cargoName") cannot be extracted from the PDF, generate an error message in the following format: 
+	"ERROR: The following required fields could not be extracted from the PDF: [list of missing fields]. Please review the PDF and provide the missing information." 
+For example, if "hawb" and "volume" are missing, the error message should be:
+	"ERROR: The following required fields could not be extracted from the PDF: ["hawb", "volume"]. Please review the PDF and provide the missing information."
+If all required fields are present, generate the JSON output as specified above.
+For optional fields that are not found in the PDF, dont include them in the JSON output.
+Prioritize accuracy and ensure the generated JSON is valid and conforms to the specified structure.`
 
 type HwbService struct {
 	config *configuration.Config
@@ -36,15 +89,27 @@ func NewHwbService(config *configuration.Config) *HwbService {
 	return &HwbService{config: config, ai: ai}
 }
 
-func (i *HwbService) AnalysePdfFile(filename string) (*model.EntityCollection, error) {
+func (i *HwbService) AnalysePdfFile(filename string) error {
 	answer, err := i.ai.GenerateContentFromPDF(filename, promptHwbVertexAI)
-	result := model.HwbReportResponseVertexAi{}
-	err = json.Unmarshal([]byte(answer), &result)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	ValidationResp := i.ConvertResponse(&result)
-	return ValidationResp, nil
+
+	cleanedString := strings.TrimPrefix(answer, "```json")
+	answer = strings.TrimSuffix(cleanedString, "```")
+	if os.Getenv("WRITE_TO_FILE") == "true" {
+		err = writeToFile(answer, filename)
+		if err == nil {
+			fmt.Println("created file: " + filename)
+		}
+	}
+	return err
+}
+
+func writeToFile(answer string, fileName string) error {
+	create, _ := os.Create("./ai-output/" + fileName + ".json")
+	_, _ = create.WriteString(answer)
+	return create.Close()
 }
 
 func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVertexAi) *model.EntityCollection {

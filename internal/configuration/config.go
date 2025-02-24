@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -20,11 +21,16 @@ type Config struct {
 }
 
 func NewConfig() (error, *Config) {
-	env := Config{}
+	viper.SetConfigFile(".env")
+	viper.SetConfigType("env")
 	viper.AutomaticEnv()
-	err := viper.Unmarshal(&env)
+
+	err := viper.ReadInConfig()
 	if err != nil {
-		return err, nil
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-	return nil, &env
+	env := Config{}
+	err = viper.Unmarshal(&env)
+
+	return err, &env
 }

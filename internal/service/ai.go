@@ -20,9 +20,7 @@ func NewAiCommunicationService(config *configuration.Config) *AiCommunicationSer
 	return &AiCommunicationService{config: config}
 }
 
-// generateContentFromPDF generates a response, based upon the PDF
 func (a *AiCommunicationService) GenerateContentFromPDF(fileName string, prompt string) (string, error) {
-
 	if err := a.waitUntilFileExists(a.config.GcBucketName, fileName); err != nil {
 		return "", err
 	}
