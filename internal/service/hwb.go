@@ -133,7 +133,7 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Name:    responseVertexAI.ConsigneeName,
 	}
 	entityCollection.Organizations = append(entityCollection.Organizations, consignee)
-	factoryName := "Unknown"
+	factoryName := responseVertexAI.ShipperName
 	if responseVertexAI.FactoryName != "" {
 		factoryName = responseVertexAI.FactoryName
 	}
