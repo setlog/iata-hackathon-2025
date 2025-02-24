@@ -151,15 +151,15 @@ func (o *TokenService) createNewToken() error {
 	return err
 }
 
-func (o *TokenService) RequestData(method string, url string, payload []byte) (error, []byte) {
+func (o *TokenService) RequestData(method string, url string, payload []byte) (error, []byte, string) {
 	err := o.checkToken()
 	if err != nil {
-		return err, nil
+		return err, nil, ""
 	}
 
 	req, err := http.NewRequest(method, url, bytes.NewReader(payload))
 	if err != nil {
-		return err, nil
+		return err, nil, ""
 	}
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("authorization", "Bearer "+o.getToken())
@@ -171,15 +171,16 @@ func (o *TokenService) RequestData(method string, url string, payload []byte) (e
 		}
 	}(res.Body)
 	if err != nil {
-		return err, nil
+		return err, nil, ""
 	}
 	if res.StatusCode != http.StatusOK {
 		slog.Error("Non-OK HTTP status:", res.StatusCode)
-		return errors.New("Non-OK HTTP status: " + res.Status), nil
+		return errors.New("Non-OK HTTP status: " + res.Status), nil, ""
 	}
 	body, err := io.ReadAll(res.Body)
+	header := res.Header.Get("location")
 	if err != nil {
-		return err, nil
+		return err, nil, ""
 	}
-	return nil, body
+	return nil, body, header
 }

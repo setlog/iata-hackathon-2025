@@ -6,6 +6,8 @@ import (
 	"com.setlog/internal/model/iata"
 	"encoding/json"
 	"fmt"
+	"github.com/sagikazarmark/locafero"
+	"log"
 )
 
 type IataService struct {
@@ -17,197 +19,148 @@ func NewIataService(config *configuration.Config, token *TokenService) *IataServ
 	return &IataService{config: config, token: token}
 }
 func (service *IataService) CreateIataData(data *model.EntityCollection) error {
+	err, locations := service.createItemData(data.Items)
+	if err != nil {
+		return err
+	}
+	err, pieceLocations := service.createPieceData(data.Pieces, locations)
+	if err != nil {
+		return err
+	}
+	err, orgLocations := service.createOrganisationData(data.Organizations)
+	if err != nil {
+		return err
+	}
+	err, shipLocations := service.createShipmentData(data.Shipments, pieceLocations, orgLocations)
+	if err != nil {
+
+	}
+	err, orgLocations := service.createHwbData(data.Hwbs, shipLocations[0], orgLocations)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (service *IataService) createShipmentData(data *iata.Shipment) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
+func (service *IataService) createShipmentData(data []iata.Shipment, pieces []string, orga map[string]string) (error, []string) {
+	var shipLoc []string
+	for _, ship := range data {
+		for _, piece := range pieces {
+			obj := iata.ObjectLink{Id: piece}
+			ship.ShipmentOfPieces = append(ship.ShipmentOfPieces, obj)
+		}
+		for key, value := range orga {
+			party := iata.InvolvedParty{}
+			party.Type = "cargo:Party"
+			party.Role = key
+			party.Organization = iata.ObjectLink{Id: value}
+			ship.InvolvedParties = append(ship.InvolvedParties, party)
+		}
+
+		payload, err := json.Marshal(ship)
+		if err != nil {
+			return err, nil
+		}
+
+		err, _, loc := service.token.RequestData("POST", service.config.IataServiceUrl, payload)
+		if err != nil {
+			return err, nil
+		}
+		shipLoc = append(shipLoc, loc)
+	}
+	return nil, shipLoc
+}
+func (service *IataService) createProductData(data *iata.Product) (error, string) {
 	payload, err := json.Marshal(data)
 	if err != nil {
+		return err, ""
+	}
+	err, _, location := service.token.RequestData("POST", service.config.IataServiceUrl, payload)
+	if err != nil {
+		return err, ""
+	}
+
+	return nil, location
+}
+func (service *IataService) createHwbData(data []iata.Hwb, shipLoc string, orga map[string]string) error {
+	hwb := data[0]
+	for key, value := range orga {
+		party := iata.InvolvedParty{}
+		party.Type = "cargo:Party"
+		party.Role = key
+		party.Organization = iata.ObjectLink{Id: value}
+		hwb.InvolvedParties = append(hwb.InvolvedParties, party)
+	}
+	hwb.Shipment = iata.ObjectLink{Id: shipLoc}
+	payload, err := json.Marshal(hwb)
+	if err != nil {
 		return err
 	}
-	err, _ = service.token.RequestData("POST", url, payload)
+	err, _, _ = service.token.RequestData("POST", service.config.IataServiceUrl, payload)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (service *IataService) createProductData(data *iata.Product) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
+func (service *IataService) createOrganisationData(data []iata.Organization) (error, map[string]string) {
+	var orgLoc map[string]string
+	for _, org := range data {
+		payload, err := json.Marshal(org)
+		if err != nil {
+			return err, nil
+		}
+		err, _, loc := service.token.RequestData("POST", service.config.IataServiceUrl, payload)
+		if err != nil {
+			return err, nil
+		}
+		orgLoc[org.Type] = loc
 	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (service *IataService) createHwbData(data *iata.Hwb) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (service *IataService) createOrganisationData(data *iata.Organization) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
+	return nil, orgLoc
 }
 
-func (service *IataService) createPersonData(data *iata.Person) error {
+func (service *IataService) createPieceData(pieces []iata.Piece, locations []string) (error, []string) {
+	var loc []string
+	for _, piece := range pieces {
 
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
+		payload, err := json.Marshal(piece)
+		if err != nil {
+			return err, nil
+		}
+		err, _, location := service.token.RequestData("POST", service.config.IataServiceUrl, payload)
+		if err != nil {
+			return err, nil
+		}
+		loc = append(loc, location)
 	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return nil, loc
 }
 
-func (service *IataService) createPieceData(data *iata.Piece) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+func (service *IataService) createItemData(items []iata.Item) (error, []string) {
+	var createdProducts map[string]string
+	var locations []string
+	for _, item := range items {
+		product := item.RawProduct
+		if _, ok := createdProducts[product.UniqueIdentifier]; ok {
+			err, location := service.createProductData(&product)
+			if err != nil {
+				return err, nil
+			}
+			createdProducts[product.UniqueIdentifier] = location
+		}
 
-func (service *IataService) createItemData(data *iata.Item) error {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	err, _ = service.token.RequestData("POST", url, payload)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (service *IataService) getShipmentData(data *model.InspectionTestValidationResponse) (error, *iata.Shipment) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var ship *iata.Shipment
-	err = json.Unmarshal(body, &ship)
-	if err != nil {
-		return err, nil
+		item.DescribedByProduct.Id = createdProducts[product.UniqueIdentifier]
+		payload, err := json.Marshal(item)
+		if err != nil {
+			return err, nil
+		}
+		err, _, location := service.token.RequestData("POST", service.config.IataServiceUrl, payload)
+		if err != nil {
+			return err, nil
+		}
+		locations = append(locations, location)
 	}
 
-	return nil, ship
-}
-func (service *IataService) getProductData(data *model.InspectionTestValidationResponse) (error, *iata.Product) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var product *iata.Product
-	err = json.Unmarshal(body, &product)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, product
-}
-func (service *IataService) getHwbData(data *model.InspectionTestValidationResponse) (error, *iata.Hwb) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var hwb *iata.Hwb
-	err = json.Unmarshal(body, &hwb)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, hwb
-}
-func (service *IataService) getOrganisationData(data *model.InspectionTestValidationResponse) (error, *iata.Organization) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var org *iata.Organization
-	err = json.Unmarshal(body, &org)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, org
-}
-
-func (service *IataService) getPersonData(data *model.InspectionTestValidationResponse) (error, *iata.Person) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var person *iata.Person
-	err = json.Unmarshal(body, &person)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, person
-}
-
-func (service *IataService) getPieceData(data *model.InspectionTestValidationResponse) (error, *iata.Piece) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var piece *iata.Piece
-	err = json.Unmarshal(body, &piece)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, piece
-}
-
-func (service *IataService) getItemData(data *model.InspectionTestValidationResponse) (error, *iata.Item) {
-	url := fmt.Sprintf("%s/on-carriages", service.config.IataServiceUrl)
-	err, body := service.token.RequestData("GET", url, nil)
-	if err != nil {
-		return err, nil
-	}
-	var item *iata.Item
-	err = json.Unmarshal(body, &item)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, item
+	return nil, locations
 }

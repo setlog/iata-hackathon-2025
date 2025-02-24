@@ -31,7 +31,7 @@ func main() {
 
 	conv := hw.ConvertResponse(resp)
 
-	iata.CreateIataData(conv)
+	err = iata.CreateIataData(conv)
 	if err != nil {
 		slog.Error(err.Error())
 		return
