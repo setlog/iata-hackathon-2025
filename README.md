@@ -23,8 +23,8 @@ AI_MODEL=<AI model for the document parsing, e.g. gemini-2.0-flash-exp>
 ## Installation
 1. Clone this repository:
 ```bash
-git clone <repository-url>
-cd haweb2iata-converter
+git clone https://github.com/setlog/iata-hackathon-2025.git
+cd iata-hackathon-2025
 ```
 2. Install dependencies:
 ```bash
@@ -34,7 +34,7 @@ go mod tidy
 ## Running the Application
 Start the service using the following command:
 ```bash
-go run -o haweb2iata-converter .
+go run -o iata-hackathon-2025 .
 ```
 
 ## API Endpoints
