@@ -40,6 +40,19 @@ func main() {
 	if err != nil {
 		return
 	}
+	message := "Starting importing data to IATA OneRecord"
+
+	// Oberer Teil der Sprechblase
+	fmt.Println(" ---------------------------------------------")
+	fmt.Printf("< %s >\n", message)
+	fmt.Println(" ---------------------------------------------")
+
+	// Unterer Teil der Sprechblase und die Katze
+	fmt.Println("        \\   ^__^")
+	fmt.Println("         \\  (oo)\\_______")
+	fmt.Println("            (__)\\       )/\\")
+	fmt.Println("                ||----w |")
+	fmt.Println("                ||     ||")
 	for _, payload := range payloads {
 		var resp *model.HwbReportResponseVertexAi
 		err = json.Unmarshal(payload.Payload, &resp)
@@ -48,9 +61,17 @@ func main() {
 		}
 
 		if isPayloadValid(&statistic, resp) {
+
 			conv := hw.ConvertResponse(resp)
 
+			fmt.Println(" ---------------------------------------------")
+			fmt.Printf("< %s >\n", "Start sending data to IATA OneRecord")
+			fmt.Println(" ---------------------------------------------")
 			err = iata.CreateIataData(conv)
+
+			fmt.Println(" ---------------------------------------------")
+			fmt.Printf("< %s >\n", "Finished sending data to IATA OneRecord")
+			fmt.Println(" ---------------------------------------------")
 			if err != nil {
 				slog.Error(err.Error())
 				return
@@ -58,6 +79,15 @@ func main() {
 		}
 
 	}
+
+	fmt.Println(" ---------------------------------------------")
+	fmt.Printf("< %s >\n", "Finished importing data to IATA OneRecord")
+	fmt.Println(" ---------------------------------------------")
+	fmt.Println("        \\   ^__^")
+	fmt.Println("         \\  (oo)\\_______")
+	fmt.Println("            (__)\\       )/\\")
+	fmt.Println("                ||----w |")
+	fmt.Println("                ||     ||")
 	fmt.Printf("%#v", statistic)
 
 }

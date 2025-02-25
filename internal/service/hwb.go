@@ -3,9 +3,11 @@ package service
 import (
 	"com.setlog/internal/model/iata"
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"com.setlog/internal/configuration"
 	"com.setlog/internal/model"
@@ -15,7 +17,7 @@ const promptHwbVertexAI = `You are an expert air freight forwarder. Your task is
 
 **Instructions:**
 
-1. **Parse PDF Content:** Extract the relevant information from the provided PDF content.
+500. **Parse PDF Content:** Extract the relevant information from the provided PDF content.
 2. **Required Fields:** Ensure the following required fields are present: "hawb", "totalGrossWeight", "volume", and "cargoName".If any of these fields are missing, generate an error message as described below.
 3. **Optional Fields:** For optional fields that are not found in the PDF, leave the corresponding JSON values as empty strings or null.
 4. **Data Format Variations:** Handle variations in data formats as described below.
@@ -120,18 +122,24 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Type:    "cargo:Organization",
 		Name:    responseVertexAI.CarrierName,
 	}
+	slog.Info("Carrier converted", "carrierName", responseVertexAI.CarrierName)
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, carrier)
 	shipper := iata.Organization{
 		Context: context,
 		Type:    "cargo:Organization",
 		Name:    responseVertexAI.ShipperName,
 	}
+	slog.Info("Shipper converted", "shipperName", responseVertexAI.ShipperName)
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, shipper)
 	consignee := iata.Organization{
 		Context: context,
 		Type:    "cargo:Organization",
 		Name:    responseVertexAI.ConsigneeName,
 	}
+	slog.Info("Consignee converted", "consigneeName", responseVertexAI.ConsigneeName)
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, consignee)
 	factoryName := responseVertexAI.ShipperName
 	if responseVertexAI.FactoryName != "" {
@@ -171,6 +179,8 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		ContainedItems:       nil,
 		HandlingInstructions: nil,
 	}
+	slog.Info("Piece with containing goods converted", "goodsDescription", piece.GoodsDescription)
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Pieces = append(entityCollection.Pieces, piece)
 	totalDimensions := iata.TotalDimensions{
 		Height: iata.Measurement{
@@ -200,8 +210,12 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		ShipmentOfPieces: nil,
 		InvolvedParties:  nil,
 	}
+	slog.Info("Shipment converted")
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Shipments = append(entityCollection.Shipments, shipment)
 	hwb := iata.Hwb{Context: context, Type: "cargo:Waybill", WaybillNumber: responseVertexAI.Hawb, WaybillType: "house"}
+	slog.Info("Hawb: converted", "HWB-No", hwb.WaybillNumber)
+	time.Sleep(500 * time.Millisecond)
 	entityCollection.Hwbs = append(entityCollection.Hwbs, hwb)
 	return &entityCollection
 }
