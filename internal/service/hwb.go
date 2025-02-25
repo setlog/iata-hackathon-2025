@@ -1,16 +1,14 @@
 package service
 
 import (
+	"com.setlog/internal/configuration"
+	"com.setlog/internal/model"
 	"com.setlog/internal/model/iata"
 	"fmt"
 	"log/slog"
 	"os"
 	"strconv"
 	"strings"
-	"time"
-
-	"com.setlog/internal/configuration"
-	"com.setlog/internal/model"
 )
 
 const promptHwbVertexAI = `You are an expert air freight forwarder. Your task is to generate a HAWB (House Air Waybill) in JSON format from the provided PDF file content.
@@ -123,7 +121,6 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Name:    responseVertexAI.CarrierName,
 	}
 	slog.Info("Carrier converted", "carrierName", responseVertexAI.CarrierName)
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, carrier)
 	shipper := iata.Organization{
 		Context: context,
@@ -131,7 +128,6 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Name:    responseVertexAI.ShipperName,
 	}
 	slog.Info("Shipper converted", "shipperName", responseVertexAI.ShipperName)
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, shipper)
 	consignee := iata.Organization{
 		Context: context,
@@ -139,7 +135,6 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		Name:    responseVertexAI.ConsigneeName,
 	}
 	slog.Info("Consignee converted", "consigneeName", responseVertexAI.ConsigneeName)
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Organizations = append(entityCollection.Organizations, consignee)
 	factoryName := responseVertexAI.ShipperName
 	if responseVertexAI.FactoryName != "" {
@@ -180,7 +175,6 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		HandlingInstructions: nil,
 	}
 	slog.Info("Piece with containing goods converted", "goodsDescription", piece.GoodsDescription)
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Pieces = append(entityCollection.Pieces, piece)
 	totalDimensions := iata.TotalDimensions{
 		Height: iata.Measurement{
@@ -211,11 +205,9 @@ func (i *HwbService) ConvertResponse(responseVertexAI *model.HwbReportResponseVe
 		InvolvedParties:  nil,
 	}
 	slog.Info("Shipment converted")
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Shipments = append(entityCollection.Shipments, shipment)
 	hwb := iata.Hwb{Context: context, Type: "cargo:Waybill", WaybillNumber: responseVertexAI.Hawb, WaybillType: "house"}
 	slog.Info("Hawb: converted", "HWB-No", hwb.WaybillNumber)
-	time.Sleep(500 * time.Millisecond)
 	entityCollection.Hwbs = append(entityCollection.Hwbs, hwb)
 	return &entityCollection
 }

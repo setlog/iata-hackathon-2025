@@ -6,7 +6,6 @@ import (
 	"com.setlog/internal/model/iata"
 	"encoding/json"
 	"log/slog"
-	"time"
 )
 
 type IataService struct {
@@ -70,7 +69,6 @@ func (service *IataService) createShipmentData(data []iata.Shipment, pieces []st
 	}
 
 	slog.Info("Shipment imported in IATA OneRecord")
-	time.Sleep(500 * time.Millisecond)
 	return nil, shipLoc
 }
 func (service *IataService) createProductData(data *iata.Product) (error, string) {
@@ -105,7 +103,6 @@ func (service *IataService) createHwbData(data []iata.Hwb, shipLoc string, orga 
 	}
 
 	slog.Info("HWB imported in IATA OneRecord")
-	time.Sleep(500 * time.Millisecond)
 	return nil
 }
 func (service *IataService) createOrganisationData(data []iata.Organization) (error, map[string]string) {
@@ -142,7 +139,6 @@ func (service *IataService) createPieceData(pieces []iata.Piece, itemLocations [
 	}
 
 	slog.Info("Pieces imported in IATA OneRecord")
-	time.Sleep(500 * time.Millisecond)
 	return nil, loc
 }
 
@@ -168,8 +164,6 @@ func (service *IataService) createItemData(items []iata.Item) (error, []string) 
 	}
 
 	slog.Info("Products imported in IATA OneRecord")
-	time.Sleep(1500 * time.Millisecond)
 	slog.Info("Items imported in IATA OneRecord")
-	time.Sleep(500 * time.Millisecond)
 	return nil, locations
 }
