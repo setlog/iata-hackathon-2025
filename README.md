@@ -13,11 +13,11 @@ This Golang project parses unstructured HAWB documents in PDF format and convert
 Create a `.env` file in the root directory of the project with the following content:
 
 ```ini
-GOOGLE_APPLICATION_CREDENTIALS=<Path to credentials on Google Cloud>
+GOOGLE_APPLICATION_CREDENTIALS=<Path to credentials to get an access to the Google Cloud>
 GCLOUD_PROJECT_ID=<ID of Google Cloud Project>
 GCLOUD_LOCATION=<Location of Google Cloud Project>
-GCLOUD_BUCKETNAME=<Path to bucket to use on Google Cloud Project>
-AI_MODEL=<AI model for document parsing, e.g. gemini-2.0-flash-exp>
+GCLOUD_BUCKETNAME=<Path to the Google Cloud bucket>
+AI_MODEL=<AI model for the document parsing, e.g. gemini-2.0-flash-exp>
 ```
 
 ## Installation
