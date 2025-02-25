@@ -2,42 +2,42 @@ package model
 
 type HwbReportResponseVertexAi struct {
 	IsHawb               bool            `json:"isHawb"`
-	DocumentType         string          `json:"documentType"`
-	Hawb                 string          `json:"hawb"`
-	Issued               string          `json:"issued"`
-	Pol                  string          `json:"pol"`
-	Poa                  string          `json:"poa"`
-	Etd                  string          `json:"etd"`
-	Eta                  string          `json:"eta"`
-	Flightno             string          `json:"flightno"`
-	CarrierName          string          `json:"carrierName"`
-	CarrierAdress        string          `json:"carrierAdress"`
-	ShipperName          string          `json:"shipperName"`
-	ShippperAdress       string          `json:"shippperAdress"`
-	ConsigneeName        string          `json:"consigneeName"`
-	ConsigneeAdress      string          `json:"consigneeAdress"`
-	TotalGrossWeight     string          `json:"totalGrossWeight"`
-	HandlingInstructions string          `json:"handlingInstructions"`
-	TotalDimensions      TotalDimensions `json:"totalDimensions"`
-	ShipmentOfPieces     []Pieces        `json:"shipmentOfPieces"`
-	FactoryName          string          `json:"factoryName"`
-	FactoryAdress        string          `json:"factoryAdress"`
+	DocumentType         string          `json:"documentType,omitempty"`
+	Hawb                 string          `json:"hawb,omitempty"`
+	Issued               string          `json:"issued,omitempty"`
+	Pol                  string          `json:"pol,omitempty"`
+	Poa                  string          `json:"poa,omitempty"`
+	Etd                  string          `json:"etd,omitempty"`
+	Eta                  string          `json:"eta,omitempty"`
+	Flightno             string          `json:"flightno,omitempty"`
+	CarrierName          string          `json:"carrierName,omitempty"`
+	CarrierAdress        string          `json:"carrierAdress,omitempty"`
+	ShipperName          string          `json:"shipperName,omitempty"`
+	ShippperAdress       string          `json:"shippperAdress,omitempty"`
+	ConsigneeName        string          `json:"consigneeName,omitempty"`
+	ConsigneeAdress      string          `json:"consigneeAdress,omitempty"`
+	TotalGrossWeight     string          `json:"totalGrossWeight,omitempty"`
+	HandlingInstructions string          `json:"handlingInstructions,omitempty"`
+	TotalDimensions      TotalDimensions `json:"totalDimensions,omitempty"`
+	ShipmentOfPieces     []Pieces        `json:"shipmentOfPieces,omitempty"`
+	FactoryName          string          `json:"factoryName,omitempty"`
+	FactoryAdress        string          `json:"factoryAdress,omitempty"`
 }
 
 type TotalDimensions struct {
-	Length string `json:"length"`
-	Width  string `json:"width"`
-	Height string `json:"height"`
-	Unit   string `json:"unit"`
+	Length string `json:"length,omitempty"`
+	Width  string `json:"width,omitempty"`
+	Height string `json:"height,omitempty"`
+	Unit   string `json:"unit,omitempty"`
 }
 
 type Pieces struct {
-	ItemNumber      string `json:"itemNumber"`
-	ItemDescription string `json:"itemDescription"`
-	Quantity        int    `json:"quantity"`
-	Cartons         string `json:"cartons"`
-	Weight          string `json:"weight"`
-	Unit            string `json:"unit"`
-	HsCode          string `json:"hsCode"`
-	Manufacturer    string `json:"manufacturer"`
+	ItemNumber      string `json:"itemNumber,omitempty"`
+	ItemDescription string `json:"itemDescription,omitempty"`
+	Quantity        int    `json:"quantity,omitempty"`
+	Cartons         string `json:"cartons,omitempty"`
+	Weight          string `json:"weight,omitempty"`
+	Unit            string `json:"unit,omitempty"`
+	HsCode          string `json:"hsCode,omitempty"`
+	Manufacturer    string `json:"manufacturer,omitempty"`
 }

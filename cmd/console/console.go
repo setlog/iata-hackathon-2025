@@ -6,6 +6,8 @@ import (
 	"com.setlog/internal/service"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	//"github.com/spf13/viper"
 	"io/fs"
 	"log/slog"
@@ -59,9 +61,12 @@ func main() {
 		if err != nil {
 			return
 		}
+		s, _ := json.MarshalIndent(resp, "", "\t")
 
 		if isPayloadValid(&statistic, resp) {
-
+			fmt.Println("Input received")
+			fmt.Printf("%v\n", string(s))
+			time.Sleep(500 * time.Millisecond)
 			conv := hw.ConvertResponse(resp)
 
 			fmt.Println(" ---------------------------------------------")
@@ -72,6 +77,7 @@ func main() {
 			fmt.Println(" ---------------------------------------------")
 			fmt.Printf("< %s >\n", "Finished sending data to IATA OneRecord")
 			fmt.Println(" ---------------------------------------------")
+			time.Sleep(500 * time.Millisecond)
 			if err != nil {
 				slog.Error(err.Error())
 				return
