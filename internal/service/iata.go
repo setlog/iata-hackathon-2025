@@ -137,19 +137,15 @@ func (service *IataService) createPieceData(pieces []iata.Piece, itemLocations [
 }
 
 func (service *IataService) createItemData(items []iata.Item) (error, []string) {
-	createdProducts := make(map[string]string)
 	var locations []string
 	for _, item := range items {
 		product := item.RawProduct
-		if _, ok := createdProducts[product.UniqueIdentifier]; !ok {
-			err, location := service.createProductData(&product)
-			if err != nil {
-				return err, nil
-			}
-			createdProducts[product.UniqueIdentifier] = location
+		err, productLocation := service.createProductData(&product)
+		if err != nil {
+			return err, nil
 		}
 
-		item.DescribedByProduct.Id = createdProducts[product.UniqueIdentifier]
+		item.DescribedByProduct.Id = productLocation
 		payload, err := json.Marshal(item)
 		if err != nil {
 			return err, nil

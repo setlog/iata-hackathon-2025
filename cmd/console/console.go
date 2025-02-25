@@ -65,6 +65,7 @@ func main() {
 func isPayloadValid(statistic *model.Statistic, resp *model.HwbReportResponseVertexAi) bool {
 	pieceFailed := false
 	grossWeightMissing := false
+	shipperName := resp.ShipperName
 
 	statistic.TotalFiles++
 	for _, piece := range resp.ShipmentOfPieces {
@@ -72,15 +73,15 @@ func isPayloadValid(statistic *model.Statistic, resp *model.HwbReportResponseVer
 		quantityMissing := false
 		manufacturerMissing := false
 		statistic.TotalNumberOfItems++
-		if piece.ItemNumber == "" {
-			statistic.ItemNumberMissing++
-			itemNumberMissing = true
-		}
-		if piece.Quantity == 0 {
-			statistic.QuantityMissing++
-			quantityMissing = true
-		}
-		if piece.Manufacturer == "" {
+		//if piece.ItemNumber == "" {
+		//	statistic.ItemNumberMissing++
+		//	itemNumberMissing = true
+		//}
+		//if piece.Quantity == 0 {
+		//	statistic.QuantityMissing++
+		//	quantityMissing = true
+		//}
+		if shipperName == "" && piece.Manufacturer == "" {
 			statistic.ManufacturerMissing++
 			manufacturerMissing = true
 		}
